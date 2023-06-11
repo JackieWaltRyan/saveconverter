@@ -65,6 +65,12 @@ if __name__ == "__main__":
                                        repl=rb'<\1/>',
                                        string=data,
                                        flags=MULTILINE)
+                            data = sub(pattern=rb'[]',
+                                       repl=b'',
+                                       string=data)
+                            data = sub(pattern=rb' \'',
+                                       repl=b'=',
+                                       string=data)
                             print(f"    Создание файла mlp_save_prime_{ii}.xml")
                             try:
                                 with open(file=f"mlp_save_prime_{ii}.xml",
