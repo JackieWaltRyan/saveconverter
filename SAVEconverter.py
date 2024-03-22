@@ -77,10 +77,21 @@ def find_bin_files(keywords, files, folder=""):
                                repl=b'=',
                                string=data)
                     
-                    print(f"    Создание файла mlp_save_prime_{ii}.xml")
+                    if not exists(path="SAVEconverter"):
+                        print(f"    Создание папки SAVEconverter.\n")
+            
+                        try:
+                            makedirs(name="SAVEconverter")
+                        except Exception:
+                            print(f"[ERROR] Во время создания папки SAVEconverter возникла ошибка. "
+                                  f"Возможно нет прав на создания папок.\n")
+                            
+                            response = False
+                    
+                    print(f"    Создание файла SAVEconverter/mlp_save_prime_{ii}.xml")
                     
                     try:
-                        with open(file=f"mlp_save_prime_{ii}.xml",
+                        with open(file=f"SAVEconverter/mlp_save_prime_{ii}.xml",
                                   mode="w",
                                   encoding="UTF-8") as mlp_save_prime_xml:
                             mlp_save_prime_xml.write(data.decode(encoding="UTF-8",
@@ -88,7 +99,7 @@ def find_bin_files(keywords, files, folder=""):
                             
                             ii += 1
                     except Exception:
-                        print(f"[WARNING] Во время создания файла mlp_save_prime_{ii}.xml возникла ошибка. "
+                        print(f"[WARNING] Во время создания файла SAVEconverter/mlp_save_prime_{ii}.xml возникла ошибка. "
                               f"Возможно нет прав на создания файлов. "
                               f"Файл пропущен.\n")
                         
