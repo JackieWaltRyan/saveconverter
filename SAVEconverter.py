@@ -30,7 +30,7 @@ def find_bin_files(keywords, files, folder=""):
                                    string=line):
                             trigger = False
                         
-                if len(data) >= 100000:
+                if (len(data) >= 100000):
                     print("    Данные найдены. Обработка данных.")
                         
                     data = sub(pattern=rb'^.*<MLP_Save',
@@ -123,17 +123,17 @@ def find_bin_files(keywords, files, folder=""):
 
 def load_bin_files():
     try:
-        files = [x for x in argv[1:] if isfile(path=x) and x.endswith(".bin")]
+        files = [x for x in argv[1:] if (isfile(path=x) and x.endswith(".bin"))]
         
-        if len(files) > 0:
+        if (len(files) > 0):
             return find_bin_files(keywords=keywords,
                                   files=files,
                                   folder="")
         else:
             if exists(path="bin"):
-                files = [x for x in listdir(path="bin") if isfile(path=f"bin/{x}") and f"bin/{x}".endswith(".bin")]
+                files = [x for x in listdir(path="bin") if (isfile(path=f"bin/{x}") and f"bin/{x}".endswith(".bin"))]
                             
-                if len(files) > 0:
+                if (len(files) > 0):
                     return find_bin_files(keywords=keywords,
                                           files=files,
                                           folder="bin/")
