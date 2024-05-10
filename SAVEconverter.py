@@ -167,5 +167,7 @@ if __name__ == "__main__":
         else:
             raise Exception
     except Exception:
+        print("[INFO] Работа программы завершена, но во время работы возникли ошибки!\n")
+
         input()
         exit()
