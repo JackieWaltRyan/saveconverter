@@ -1,4 +1,4 @@
-from os import listdir, makedirs
+from os import listdir, makedirs, remove
 from os.path import exists, isfile
 from re import findall, sub, MULTILINE
 from sys import exit, argv
@@ -9,9 +9,9 @@ def find_bin_files(files, folder=""):
         response, i, ii = True, 1, 1
 
         for file in files:
-            print(f"[{i} из {len(files)}] Ищем данные в: {folder}{file}")
-
             try:
+                print(f"[{i} из {len(files)}] Ищем данные в: {folder}{file}")
+
                 data = b""
 
                 with open(file=f"{folder}{file}",
@@ -30,15 +30,16 @@ def find_bin_files(files, folder=""):
                                    string=line):
                             trigger = False
 
-                if len(data) >= 100000:
-                    print("    Данные найдены. Обработка данных.")
+                data = sub(pattern=rb'^.*<MLP_Save',
+                           repl=b'<MLP_Save',
+                           string=data)
+                data = sub(pattern=rb'MLP_Save>.*$',
+                           repl=b'MLP_Save>',
+                           string=data)
 
-                    data = sub(pattern=rb'^.*<MLP_Save',
-                               repl=b'<MLP_Save',
-                               string=data)
-                    data = sub(pattern=rb'MLP_Save>.*$',
-                               repl=b'MLP_Save>',
-                               string=data)
+                if len(data) >= 200000:
+                    print("    Данные найдены. Обработка данных...")
+
                     data = sub(pattern=rb'\x00 ',
                                repl=b'" ',
                                string=data)
@@ -60,9 +61,41 @@ def find_bin_files(files, folder=""):
                     data = sub(pattern=rb'\n',
                                repl=b'',
                                string=data)
+
                     data = sub(pattern=rb'<RedeemList>.*</RedeemList>',
-                               repl=b'<RedeemList><RedeemItem/></RedeemList>',
+                               repl=b'<RedeemList/>',
                                string=data)
+                    data = sub(pattern=rb'<SocialLeaderboard_Entry .*</Equestria_Girl>',
+                               repl=b'</Equestria_Girl>',
+                               string=data)
+                    data = sub(pattern=rb'<bundles>.*</bundles>',
+                               repl=b'<bundles/>',
+                               string=data)
+                    data = sub(pattern=rb'<Referrals>.*</Referrals>',
+                               repl=b'<Referrals/>',
+                               string=data)
+                    data = sub(pattern=rb'<LbEntries>.*</LbEntries>',
+                               repl=b'<LbEntries/>',
+                               string=data)
+                    data = sub(pattern=rb'<ClaimedRewards>.*</ClaimedRewards>',
+                               repl=b'<ClaimedRewards/>',
+                               string=data)
+                    data = sub(pattern=rb'<SentPNs>.*</SentPNs>',
+                               repl=b'<SentPNs/>',
+                               string=data)
+                    data = sub(pattern=rb'<Received_Gifts>.*</Received_Gifts>',
+                               repl=b'<Received_Gifts/>',
+                               string=data)
+                    data = sub(pattern=rb'<Sent_Gifts>.*</Sent_Gifts>',
+                               repl=b'<Sent_Gifts/>',
+                               string=data)
+                    data = sub(pattern=rb'<Treasure_Gifts>.*</Treasure_Gifts>',
+                               repl=b'<Treasure_Gifts/>',
+                               string=data)
+                    data = sub(pattern=rb'<GlobalDataTable>.*</GlobalDataTable>',
+                               repl=b'<GlobalDataTable/>',
+                               string=data)
+
                     data = sub(pattern=rb'><',
                                repl=b'>\n<',
                                string=data)
@@ -78,7 +111,7 @@ def find_bin_files(files, folder=""):
                                string=data)
 
                     if not exists(path="SAVEconverter"):
-                        print(f"    Создание папки SAVEconverter.\n")
+                        print(f"    Создание папки SAVEconverter.")
 
                         try:
                             makedirs(name="SAVEconverter")
@@ -88,7 +121,7 @@ def find_bin_files(files, folder=""):
 
                             response = False
 
-                    print(f"    Создание файла SAVEconverter/mlp_save_prime_{ii}.xml")
+                    print(f"    Создание файла SAVEconverter/mlp_save_prime_{ii}.xml.")
 
                     try:
                         with open(file=f"SAVEconverter/mlp_save_prime_{ii}.xml",
@@ -99,12 +132,17 @@ def find_bin_files(files, folder=""):
 
                             ii += 1
                     except Exception:
-                        print(
-                            f"[WARNING] Во время создания файла SAVEconverter/mlp_save_prime_{ii}.xml возникла ошибка. "
-                            f"Возможно нет прав на создания файлов. "
-                            f"Файл пропущен.\n")
+                        print(f"[WARNING] Во время создания файла SAVEconverter/mlp_save_prime_{ii}.xml возникла "
+                              f"ошибка. "
+                              f"Возможно нет прав на создания файлов. "
+                              f"Файл пропущен.\n")
 
                         response = False
+                else:
+                    try:
+                        remove(path=f"{folder}{file}")
+                    except Exception:
+                        pass
             except Exception:
                 print(f"[WARNING] При обработке файла {folder}{file} возникла ошибка. "
                       f"Возможно данные в файле повреждены или нет прав на чтение файлов. "
