@@ -1,6 +1,6 @@
 from os import listdir, makedirs, remove
 from os.path import exists, isfile
-from re import findall, sub, MULTILINE
+from re import findall, sub, MULTILINE, finditer
 from sys import exit, argv
 
 
@@ -74,9 +74,6 @@ def find_bin_files(files, folder=""):
                     data = sub(pattern=rb'<Referrals>.*</Referrals>',
                                repl=b'<Referrals/>',
                                string=data)
-                    data = sub(pattern=rb'<LbEntries>.*</LbEntries>',
-                               repl=b'<LbEntries/>',
-                               string=data)
                     data = sub(pattern=rb'<ClaimedRewards>.*</ClaimedRewards>',
                                repl=b'<ClaimedRewards/>',
                                string=data)
@@ -95,6 +92,17 @@ def find_bin_files(files, folder=""):
                     data = sub(pattern=rb'<GlobalDataTable>.*</GlobalDataTable>',
                                repl=b'<GlobalDataTable/>',
                                string=data)
+
+                    lbstart = [match.start() for match in finditer(pattern=b"<LbEntries>",
+                                                                   string=data)]
+                    lbstart.reverse()
+
+                    lbend = [match.end() for match in finditer(pattern=b"</LbEntries>",
+                                                               string=data)]
+                    lbend.reverse()
+
+                    for index in range(len(lbstart)):
+                        data = (data[:lbstart[index]] + b"<LbEntries/>" + data[lbend[index]:])
 
                     data = sub(pattern=rb'><',
                                repl=b'>\n<',
