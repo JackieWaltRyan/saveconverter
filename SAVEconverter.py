@@ -89,9 +89,6 @@ def find_bin_files(files, folder=""):
                     data = sub(pattern=rb'<Treasure_Gifts>.*</Treasure_Gifts>',
                                repl=b'<Treasure_Gifts/>',
                                string=data)
-                    data = sub(pattern=rb'<GlobalDataTable>.*</GlobalDataTable>',
-                               repl=b'<GlobalDataTable/>',
-                               string=data)
 
                     lbstart = [match.start() for match in finditer(pattern=b"<LbEntries>",
                                                                    string=data)]
